@@ -1,0 +1,60 @@
+package com.mkyong.rest;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+public class ThreadPool {
+	public static String output;
+    public static LinkedBlockingQueue<Runnable> queue=new LinkedBlockingQueue<Runnable>();
+    public static ExecutorService executor =new ThreadPoolExecutor(3,3,0,TimeUnit.MILLISECONDS,queue);
+    public static String init() throws SQLException, ClassNotFoundException, InterruptedException {
+            jdbc_con db;
+        
+        for (int i = 1; i <= 15; i++) {
+            Runnable worker = new WorkerThread("p" + i, (int) ((Math.random()*10000)%5000));
+            //Thread.sleep(1000);
+            executor.execute(worker);
+          }
+        executor.shutdown();
+        while (!executor.isTerminated()) {
+        }
+        output+="Finished all threads"+"\n";
+        return output;
+    }
+ 
+}
+class WorkerThread implements Runnable{
+    private String message;
+    Object object;
+    public boolean isComplete=false;
+    int duration;   
+    public WorkerThread(String s,int duration){
+        this.duration=duration;
+        //System.out.println("objects free: "+Poolnew.ObjectPool.size());
+        this.message=s;
+    }
+ 
+    @Override
+    public void run() {
+        ThreadPool.output+=ThreadPool.queue.size()+" threads waiting in queue."+"\n";
+        long current_time=System.currentTimeMillis();  
+        //System.out.println(current_time);
+        ThreadPool.output+=Thread.currentThread().getName()+" (Start)"+message;
+        ThreadPool.output+="-"+this.duration+"\n";
+        istime(current_time);
+        ThreadPool.output+=Thread.currentThread().getName()+" (End)"+"\n";
+        this.isComplete=true;
+        //p.free++;
+    }
+    public void istime(long start_time){
+        while((System.currentTimeMillis()-start_time)<duration);
+        //System.out.println(System.currentTimeMillis());
+    }
+    
+ 
+    
+}
