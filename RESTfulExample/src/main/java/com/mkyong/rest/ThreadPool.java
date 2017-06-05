@@ -1,32 +1,20 @@
 package com.mkyong.rest;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.sql.*;  
 import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.sql.*;  
 
 public class ThreadPool {
 	static int i= 0;
-	static int n=3;
-	public jdbc_con db;
+	static int n=5;
 	public static String output;
-	static Stack<Object> ObjectPool = new Stack<Object>();
+	public static Stack<Object> ObjectPool = new Stack<Object>();
     public static LinkedBlockingQueue<Runnable> queue=new LinkedBlockingQueue<Runnable>();
     public static ExecutorService executor =new ThreadPoolExecutor(n,n,0,TimeUnit.MILLISECONDS,queue);
-    
-   /* ThreadPool(int n) throws ClassNotFoundException, SQLException{
-    	for(i=n;i>0;i--){
-    		db = new jdbc_con("com.mysql.jdbc.Driver","jdbc:mysql://localhost/cyborg","root","");
-    		Connection con=db.getConnection(db);
-    		System.out.println(con);
-    		Object ob=(Object)con;
-    		ObjectPool.push(ob);
-    	}
-    	
-    }*/
     
     public static void getPoolObject(){
     	i++;
@@ -41,7 +29,6 @@ class WorkerThread implements Runnable{
     int duration;   
     public WorkerThread(String s,int duration){
         this.duration=duration;
-        //System.out.println("objects free: "+Poolnew.ObjectPool.size());
         this.message=s;
     }
     
@@ -49,20 +36,31 @@ class WorkerThread implements Runnable{
     public void run() {
     	System.out.println(ThreadPool.queue.size()+" threads waiting in queue.");
         long current_time=System.currentTimeMillis();  
-        //System.out.println(current_time);
-        System.out.println(Thread.currentThread().getName()+" (Start)"+message);
-        //System.out.println("-"+this.duration);
-        //istime(current_time);
+        System.out.print(Thread.currentThread().getName()+" (Start)"+message);
+        System.out.println("-"+this.duration);
         while(ThreadPool.ObjectPool.empty());
-        System.out.println(Thread.currentThread().getName()+" (End)");
+        Connection conn=(Connection)ThreadPool.ObjectPool.pop();
+        System.out.println("objects free: "+ThreadPool.ObjectPool.size());
+
+        Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			String query = "select * from personal_details ;" ;
+	        ResultSet rs = stmt.executeQuery(query) ;
+	        if(rs.next())
+	        System.out.println("database connection successful");  
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        istime(current_time);
+        System.out.println(Thread.currentThread().getName()+" (End)"+message);
         this.isComplete=true;
-        //p.free++;
+        ThreadPool.ObjectPool.push(conn);
+        System.out.println("objects free: "+ThreadPool.ObjectPool.size());
     }
     public void istime(long start_time){
         while((System.currentTimeMillis()-start_time)<duration);
         //System.out.println(System.currentTimeMillis());
     }
-    
- 
-    
 }

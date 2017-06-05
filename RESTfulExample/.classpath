@@ -8,5 +8,7 @@
 	<classpathentry kind="var" path="M2_REPO/junit/junit/4.8.2/junit-4.8.2.jar" sourcepath="M2_REPO/junit/junit/4.8.2/junit-4.8.2-sources.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="C:/book/lib/mysql-connector-java-5.1.17-bin.jar"/>
+	<classpathentry kind="lib" path="E:/Users/I Siddhartha Kumar/Desktop/RESTfulExample/src/main/webapp/WEB-INF/lib/log4j-1.2.17.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/servlet-api-3.0.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

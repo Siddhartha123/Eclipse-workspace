@@ -8,7 +8,7 @@ public class jdbc_con implements Runnable{
     int num_conn;
     boolean is_connected=false;
     Connection connection;
-    jdbc_con(String driver,String url,String user, String pass) throws SQLException, ClassNotFoundException {
+    public jdbc_con(String driver,String url,String user, String pass) throws SQLException, ClassNotFoundException {
     // Load the JDBC driver
      Class.forName(driver);
     
@@ -16,11 +16,9 @@ public class jdbc_con implements Runnable{
     connection = DriverManager.getConnection
       (url, user,pass);
     is_connected=true;
-  }
-    Connection getConnection(jdbc_con db){
-        
-        return connection;
-        
+    }
+    public Connection getConnection(jdbc_con db){
+        return this.connection;
     }
     public static void main(String[] args) throws SQLException, ClassNotFoundException{
        List<Connection> connections=new ArrayList<Connection>(); 
