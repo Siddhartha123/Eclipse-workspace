@@ -13,7 +13,7 @@ public class Objectpool {
         int i;
         for(i=n;i>0;i--){
           db = new jdbc_con("com.mysql.jdbc.Driver","jdbc:mysql://localhost/cyborg","root","");
-          Connection con=db.getConnection(db);
+          Connection con=db.getConnection();
           Object ob=(Object)con;
           ObjectPool.push(ob);
         }

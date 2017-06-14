@@ -6,10 +6,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.sql.*;  
 import java.util.concurrent.Semaphore;
 public class ThreadPool {
-	public static final int MAX_AVAILABLE = 10;
+	public static AtomicInteger count=new AtomicInteger(0);
+	public static int maxSize = 10;
 	public static int baseSize=5;
 	public static final Semaphore available = new Semaphore(baseSize, true);
 	public static Stack<Object> ObjectPool = new Stack<Object>();
@@ -21,16 +23,17 @@ public class ThreadPool {
 
 	public static void putObject(Object x) {
 		ObjectPool.push(x);
+		//ThreadPool.count.incrementAndGet();
 		System.out.println("Object returned to pool");
 		System.out.println("Current Pool size: "+ThreadPool.ObjectPool.size());
 		available.release();
 	}
 
 	private static synchronized Object getAvailableItem() {
-		if(ObjectPool.empty())
-			return null;
+		while(ObjectPool.empty());
 		System.out.println("Object removed from pool");
 		Object ob=ObjectPool.pop();
+		//ThreadPool.count.decrementAndGet();
 		System.out.println("Current Pool size: "+ThreadPool.ObjectPool.size());
 		System.out.println("Number of threads waiting in queue: "+ThreadPool.available.getQueueLength());
 		return ob;
@@ -45,13 +48,14 @@ public class ThreadPool {
 		//ThreadPool.available.reducePermits(reduction);
 	}
 
-	public static void increasePoolSize(int n){
-		int inc;
-		if(ThreadPool.ObjectPool.size()+n>ThreadPool.MAX_AVAILABLE)
-			inc=ThreadPool.MAX_AVAILABLE-ThreadPool.ObjectPool.size();
-		else
-			inc=n;
-		ThreadPool.available.release(inc);
+	public static void increasePoolSize() throws ClassNotFoundException, SQLException{
+		int i;
+		for(i=ThreadPool.maxSize-ThreadPool.baseSize;i>0;i--){
+			jdbc_con db=new jdbc_con("com.mysql.jdbc.Driver","jdbc:mysql://localhost/cyborg","root","");
+			Object x=(Object)db.getConnection();
+			ThreadPool.putObject(x);
+			ThreadPool.count.incrementAndGet();
+		}
 	}
 }
 
@@ -68,7 +72,6 @@ class WorkerThread implements Runnable{
 
 	@Override
 	public void run() {
-
 		long current_time=System.currentTimeMillis();  
 		System.out.print(Thread.currentThread().getName()+" (Start)"+message);
 		System.out.println("-"+this.duration);

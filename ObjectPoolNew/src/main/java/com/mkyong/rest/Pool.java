@@ -10,7 +10,7 @@ public class Pool extends HttpServlet{
 		int i;
 		for(i=n;i>0;i--){
     		jdbc_con db = new com.mkyong.rest.jdbc_con("com.mysql.jdbc.Driver","jdbc:mysql://localhost/cyborg","root","");
-    		Connection con=db.getConnection(db);
+    		Connection con=db.getConnection();
     		System.out.println(con);
     		Object ob=(Object)con;
     		ThreadPool.ObjectPool.push(ob);

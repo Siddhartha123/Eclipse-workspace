@@ -20,7 +20,7 @@ public class HelloWorldService {
 		String query = "select * from personal_details ;" ;
 		ResultSet rs = stmt.executeQuery(query) ;
 		if(rs.next())
-			System.out.println(rs.getString(2));
+			System.out.println("DB connnection successful");
 		String s="hello world";
 		istime(1000);
 		ThreadPool.putObject((Object)con);
@@ -29,7 +29,7 @@ public class HelloWorldService {
 	@GET
 	@Path("/addObject")
 	public Response changePoolSize(@QueryParam("param") int n) throws ClassNotFoundException, SQLException, InterruptedException {
-		ThreadPool.increasePoolSize(n);
+		ThreadPool.increasePoolSize();
 		String s="Pool size increased";
 		return Response.status(200).entity(s).build();
 	}
