@@ -27,7 +27,7 @@ public class initialize extends HttpServlet {
 		Manager ThreadManager=new Manager();
 		ThreadManager.start();
 		FileOutputStream f = new FileOutputStream("D:/log.txt");
-		System.setOut(new PrintStream(f));
+		//System.setOut(new PrintStream(f));
 	}
 }
 
@@ -35,8 +35,8 @@ class Manager extends Thread{
 	@Override
 	public void run(){
 		while(true){
-			System.out.println("count: "+ThreadPool.count.get());
-			if(ThreadPool.count.get()==ThreadPool.baseSize && ThreadPool.available.hasQueuedThreads())
+			System.out.println("No. of active DB connections: "+ThreadPool.count.get());
+			if(ThreadPool.count.get()<ThreadPool.maxSize && ThreadPool.available.hasQueuedThreads())
 				try {
 					ThreadPool.increasePoolSize();
 				} catch (ClassNotFoundException e1) {
@@ -44,12 +44,15 @@ class Manager extends Thread{
 				} catch (SQLException e1) {
 					System.out.println(e1);
 				}
-			else if(ThreadPool.count.get()>(ThreadPool.baseSize+1) && !ThreadPool.available.hasQueuedThreads())
+			else if(ThreadPool.count.get()>ThreadPool.baseSize && !ThreadPool.available.hasQueuedThreads())
 			{
 				try {
+					ThreadPool.available.acquire();
 					((Connection)ThreadPool.ObjectPool.pop()).close();
 					ThreadPool.count.decrementAndGet();
 				} catch (SQLException e) {
+					System.out.println(e);
+				} catch (InterruptedException e) {
 					System.out.println(e);
 				}
 			}
