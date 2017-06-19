@@ -20,13 +20,4 @@ public class jdbc_con{
     public Connection getConnection(){
         return this.connection;
     }
-    public static void main(String[] args) throws SQLException, ClassNotFoundException{
-       List<Connection> connections=new ArrayList<Connection>(); 
-        jdbc_con db=new jdbc_con("com.mysql.jdbc.Driver","jdbc:mysql//localhost/cyborg","root","");
-        if(db.is_connected){
-            Connection con=db.getConnection();
-            connections.add(con);
-            System.out.println(connections);
-        }
-    }
 }

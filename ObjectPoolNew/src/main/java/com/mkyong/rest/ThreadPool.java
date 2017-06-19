@@ -7,9 +7,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.apache.log4j.Logger;
 import java.sql.*;  
 import java.util.concurrent.Semaphore;
+
 public class ThreadPool {
+	final static Logger logger=Logger.getLogger(ThreadPool.class);
 	public static AtomicInteger count=new AtomicInteger(0);
 	public static int maxSize = 10;
 	public static int baseSize=5;
@@ -24,17 +27,17 @@ public class ThreadPool {
 	public static void putObject(Object x) {
 		ObjectPool.push(x);
 		available.release();
-		System.out.println("Object returned to pool");
-		System.out.println("Current Pool size: "+ThreadPool.ObjectPool.size());
+		logger.info("Object returned to pool");
+		logger.info("Current Pool size: "+ThreadPool.ObjectPool.size());
 	}
 
 	private static synchronized Object getAvailableItem() {
 		while(ObjectPool.empty());
-		System.out.println("Object removed from pool");
+		logger.info("Object removed from pool");
 		Object ob=ObjectPool.pop();
 		//ThreadPool.count.decrementAndGet();
-		System.out.println("Current Pool size: "+ThreadPool.ObjectPool.size());
-		System.out.println("Number of threads waiting in queue: "+ThreadPool.available.getQueueLength());
+		logger.info("Current Pool size: "+ThreadPool.ObjectPool.size());
+		logger.info("Number of threads waiting in queue: "+ThreadPool.available.getQueueLength());
 		return ob;
 	}
 
