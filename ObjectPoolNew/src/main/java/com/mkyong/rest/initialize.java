@@ -6,16 +6,8 @@ import javax.servlet.http.HttpServlet;
 import org.apache.log4j.Logger;
 import java.io.*;
 import java.util.EmptyStackException;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.*;
 public class initialize extends HttpServlet {
-	/**
-	 * @throws SQLException 
-	 * @throws ClassNotFoundException 
-	 * @throws FileNotFoundException 
-	 * @see HttpServlet#HttpServlet()
-	 */
+	
 	final static Logger logger = Logger.getLogger(initialize.class);
 	public initialize() throws ClassNotFoundException, SQLException, FileNotFoundException {
 		int i;
@@ -33,12 +25,19 @@ public class initialize extends HttpServlet {
 }
 
 class Manager extends Thread{
-	final static Logger logger=Logger.getLogger(Manager.class);
+	private int interval=0;
+	final static Logger logger=Logger.getLogger("Pool Manager");
 	@Override
 	public void run(){
 		while(true){
-			logger.debug("No. of active DB connections: "+ThreadPool.count.get());
-			if(ThreadPool.count.get()<ThreadPool.maxSize && ThreadPool.available.hasQueuedThreads())
+			if(ThreadPool.ObjectPool.size()<ThreadPool.count.get())
+				interval=100;
+			else
+				interval=5000;
+			logger.debug("#active DB connections: "+ThreadPool.count.get());
+			logger.debug("#free DB connections: "+ThreadPool.ObjectPool.size());
+			logger.debug("#threads waiting: "+ThreadPool.available.getQueueLength());
+			if(ThreadPool.count.get()<ThreadPool.maxSize && ThreadPool.available.hasQueuedThreads()){
 				try {
 					ThreadPool.increasePoolSize();
 				} catch (ClassNotFoundException e1) {
@@ -46,6 +45,7 @@ class Manager extends Thread{
 				} catch (SQLException e1) {
 					logger.error(e1);
 				}
+			}
 			else if(ThreadPool.count.get()>ThreadPool.baseSize && !ThreadPool.available.hasQueuedThreads())
 			{
 				try {
@@ -58,10 +58,11 @@ class Manager extends Thread{
 					logger.error(e);
 				}
 				catch(EmptyStackException e){
+					logger.error(e);
 				}
 			}
 			try {
-				Thread.sleep(500);
+				Thread.sleep(interval);
 			} catch (InterruptedException e) {
 				logger.error(e);
 			}

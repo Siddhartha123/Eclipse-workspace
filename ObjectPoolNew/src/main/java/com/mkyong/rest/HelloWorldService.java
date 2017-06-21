@@ -33,13 +33,6 @@ public class HelloWorldService {
 		String s="Pool size increased";
 		return Response.status(200).entity(s).build();
 	}
-	@GET
-	@Path("/removeObject")
-	public Response remove(@QueryParam("param") int n) throws ClassNotFoundException, SQLException, InterruptedException {
-		ThreadPool.reducePoolSize(n);
-		String s="Pool size decreased";
-		return Response.status(200).entity(s).build();		
-	}
 	
 	public void istime(int duration){
 		long start_time=System.currentTimeMillis();

@@ -27,27 +27,14 @@ public class ThreadPool {
 	public static void putObject(Object x) {
 		ObjectPool.push(x);
 		available.release();
-		logger.info("Object returned to pool");
-		logger.info("Current Pool size: "+ThreadPool.ObjectPool.size());
+		logger.info("Object returned to pool by:"+Thread.currentThread().getName());
 	}
 
 	private static synchronized Object getAvailableItem() {
 		while(ObjectPool.empty());
-		logger.info("Object removed from pool");
+		logger.info("Object removed from pool by:"+Thread.currentThread().getName());
 		Object ob=ObjectPool.pop();
-		//ThreadPool.count.decrementAndGet();
-		logger.info("Current Pool size: "+ThreadPool.ObjectPool.size());
-		logger.info("Number of threads waiting in queue: "+ThreadPool.available.getQueueLength());
 		return ob;
-	}
-
-	public static void reducePoolSize(int n){
-		int reduction;
-		if((ThreadPool.ObjectPool.size()-n)<ThreadPool.baseSize)
-			reduction=ThreadPool.ObjectPool.size()-ThreadPool.baseSize;
-		else
-			reduction=n;
-		//ThreadPool.available.reducePermits(reduction);
 	}
 
 	public static void increasePoolSize() throws ClassNotFoundException, SQLException{
