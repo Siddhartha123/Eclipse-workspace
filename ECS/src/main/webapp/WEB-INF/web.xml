@@ -13,6 +13,14 @@
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+	<context-param>
+		<param-name>baseSize</param-name>
+		<param-value>5</param-value>
+		</context-param>
+		<context-param>
+		<param-name>maxSize</param-name>
+		<param-value>10</param-value>
+		</context-param>
 	<servlet-mapping>
 		<servlet-name>jersey-serlvet</servlet-name>
 		<url-pattern>/rest/*</url-pattern>
